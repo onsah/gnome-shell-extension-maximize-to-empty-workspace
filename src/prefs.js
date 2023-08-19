@@ -1,50 +1,54 @@
-const { Adw, Gio, Gtk } = imports.gi;
+import Adw from "gi://Adw";
+import Gio from "gi://Gio";
+import Gtk from "gi://Gtk";
 
-const ExtensionUtils = imports.misc.extensionUtils;
-// https://gjs.guide/extensions/topics/extension-utils.html#extension-metadata
-const Me = ExtensionUtils.getCurrentExtension();
-
-/**
- * Like `extension.js` this is used for any one-time setup like translations.
- */
-function init() {
-  console.debug(`initializing ${Me.metadata.uuid} Preferences`);
-}
+import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 const MOVE_WINDOW_WHEN_MAXIMIZED = 'move-window-when-maximized';
 
-function fillPreferencesWindow(window) {
-  const settings = ExtensionUtils.getSettings();
+export default class Preferences extends ExtensionPreferences {
+  fillPreferencesWindow(window) {
+    // Make sure the window doesn't outlive the settings object
+    window._settings = this.getSettings();
+  
+    const page = this._createPage(window);
+    window.add(page);
+  }
 
-  // Create a preferences page, with a single group
-  const page = new Adw.PreferencesPage();
-  window.add(page);
+  _createPage(window) {
+    // Create a preferences page, with a single group
+    const page = new Adw.PreferencesPage();
+      
+    const group = new Adw.PreferencesGroup();
+    const maximizedToggleRow = this._createMaximizedToggleRow(window);
+    group.add(maximizedToggleRow);
 
-  const group = new Adw.PreferencesGroup();
-  page.add(group);
+    page.add(group);
+    
+    return page;
+  }
 
-  // Create a new preferences row
-  const row = new Adw.ActionRow({ title: 'Move window when maximized' });
-  group.add(row);
+  _createMaximizedToggleRow(window) {
+    // Create a new preferences row
+    const row = new Adw.ActionRow({ title: 'Move window when maximized' });
 
-  // Create a switch and bind its value to the `show-indicator` key
-  const toggle = new Gtk.Switch({
-      active: settings.get_boolean(MOVE_WINDOW_WHEN_MAXIMIZED),
+    // Create a switch and bind its value to the `show-indicator` key
+    const toggle = new Gtk.Switch({
+      active: window._settings.get_boolean(MOVE_WINDOW_WHEN_MAXIMIZED),
       valign: Gtk.Align.CENTER,
-  });
+    });
 
-  settings.bind(
-    MOVE_WINDOW_WHEN_MAXIMIZED,
-    toggle,
-    'active',
-    Gio.SettingsBindFlags.DEFAULT,
-  );
+    window._settings.bind(
+      MOVE_WINDOW_WHEN_MAXIMIZED,
+      toggle,
+      'active',
+      Gio.SettingsBindFlags.DEFAULT,
+    );
 
-  // Add the switch to the row
-  row.add_suffix(toggle);
-  row.activatable_widget = toggle;
+    // Add the switch to the row
+    row.add_suffix(toggle);
+    row.activatable_widget = toggle;
 
-  // Make sure the window doesn't outlive the settings object
-  window._settings = settings;
+    return row;
+  }
 }
-
