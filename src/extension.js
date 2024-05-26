@@ -99,7 +99,7 @@ export default class FullscreenToNewWorkspace extends Extension {
             {
             const manager = win.get_display().get_workspace_manager();
             const current = manager.get_active_workspace_index();
-            if (this._mutterSettings.get_boolean('workspaces-only-on-primary'))
+            if (this._mutterSettings.get_boolean('workspaces-only-on-primary') || global.get_display().get_n_monitors() == 1)
                 {
                 const mPrimary=win.get_display().get_primary_monitor();
                 // Only primary monitor is relevant, others don't have multiple workspaces
@@ -204,7 +204,7 @@ export default class FullscreenToNewWorkspace extends Extension {
             {
             const manager = win.get_display().get_workspace_manager();
             const current = manager.get_active_workspace_index();
-            if (this._mutterSettings.get_boolean('workspaces-only-on-primary'))
+            if (this._mutterSettings.get_boolean('workspaces-only-on-primary') || global.get_display().get_n_monitors() == 1)
                 {
                 const mPrimary=win.get_display().get_primary_monitor();
                 // Only primary monitor is relevant, others don't have multiple workspaces
