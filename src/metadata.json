@@ -4,8 +4,8 @@
   "url": "https://github.com/onsah/fullscreen-to-new-workspace",
   "uuid": "fullscreen-to-empty-workspace@aiono.dev",
   "shell-version": [
-    "46"
+    "47"
   ],
-  "version": 15,
+  "version": 16,
   "settings-schema": "org.gnome.shell.extensions.fullscreen-to-empty-workspace"
 }
